@@ -1,26 +1,44 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import axios from "axios";
+import React, { useEffect, useState } from "react";
+import { useQuery } from "react-query";
+import { CardList, Wrapper } from "./App.style";
+import Card, { CardProps } from "./components/Card";
+import CardSkeleton from "./components/CardSkeleton";
+
+const getUsers = async ({ page = 1 }: { page: number }) => {
+	return axios
+		.get("https://reqres.in/api/users?page=2")
+		.then((res) => res.data);
+};
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+	const [page, setPage] = useState(1);
+	const [start, setStart] = useState(false);
+	const { data, isLoading } = useQuery(
+		["GET_USER", page],
+		() => getUsers({ page }),
+		{
+			enabled: start,
+		}
+	);
+
+	useEffect(() => {
+		setTimeout(() => setStart(true), 3000);
+	}, []);
+
+	return (
+		<Wrapper>
+			<CardList>
+				{!start
+					? Array(6)
+							.fill(null)
+							.map((v, i) => <CardSkeleton key={i} />)
+					: data?.data.map((person: CardProps) => {
+							return <Card key={person.id} {...person} />;
+					  })}
+			</CardList>
+		</Wrapper>
+	);
 }
 
 export default App;
