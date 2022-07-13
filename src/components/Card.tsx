@@ -2,20 +2,20 @@ import React from "react";
 import { CardAvatar, CardName, CardWrapper } from "./Card.style";
 
 export interface CardProps {
-	avatar: string;
-	email: string;
-	first_name: string;
+	albumId: number;
 	id: number;
-	last_name: string;
+	title: string;
+	url: string;
+	thumbnailUrl: string;
 }
 
-const Card = ({ avatar, email, id, first_name, last_name }: CardProps) => {
+const Card = ({ title, url, thumbnailUrl }: CardProps) => {
 	return (
 		<CardWrapper>
 			<CardAvatar>
-				<img src={avatar} alt='프로필' />
+				<img src={thumbnailUrl} alt='프로필' />
 			</CardAvatar>
-			<CardName>{first_name}</CardName>
+			<CardName>{title}</CardName>
 		</CardWrapper>
 	);
 };

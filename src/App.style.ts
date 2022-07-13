@@ -2,10 +2,13 @@ import styled from "styled-components";
 
 export const Wrapper = styled.div`
 	display: flex;
-	justify-content: center;
+	justify-content: flex-start;
 	align-items: center;
-	width: 100vh;
-	height: 100vh;
+	flex-direction: column;
+	width: 100%;
+	min-height: 100vh;
+	height: auto;
+	background-color: #abc9ff;
 `;
 
 export const CardList = styled.ul`

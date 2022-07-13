@@ -1,42 +1,40 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import { InView } from "react-intersection-observer";
 import { useQuery } from "react-query";
 import { CardList, Wrapper } from "./App.style";
 import Card, { CardProps } from "./components/Card";
 import CardSkeleton from "./components/CardSkeleton";
-
-const getUsers = async ({ page = 1 }: { page: number }) => {
-	return axios
-		.get("https://reqres.in/api/users?page=2")
-		.then((res) => res.data);
-};
+import useApi from "./useApi";
 
 function App() {
-	const [page, setPage] = useState(1);
-	const [start, setStart] = useState(false);
-	const { data, isLoading } = useQuery(
-		["GET_USER", page],
-		() => getUsers({ page }),
-		{
-			enabled: start,
-		}
-	);
-
-	useEffect(() => {
-		setTimeout(() => setStart(true), 3000);
-	}, []);
+	const { data, hasNextPage, fetchNextPage, isFetching } = useApi();
 
 	return (
 		<Wrapper>
+			<h1>SKELTON DEMO</h1>
+
 			<CardList>
-				{!start
-					? Array(6)
-							.fill(null)
-							.map((v, i) => <CardSkeleton key={i} />)
-					: data?.data.map((person: CardProps) => {
-							return <Card key={person.id} {...person} />;
-					  })}
+				{data?.pages.map((page) =>
+					page.data.map((card) => {
+						return <Card key={card.id} {...card} />;
+					})
+				)}
+				{isFetching &&
+					Array(6)
+						.fill(1)
+						.map((v, i) => {
+							return <CardSkeleton key={i} />;
+						})}
 			</CardList>
+
+			{hasNextPage && (
+				<InView
+					onChange={(inView, entry) => {
+						if (entry.boundingClientRect.y > 300 && inView) fetchNextPage();
+					}}
+				/>
+			)}
 		</Wrapper>
 	);
 }
